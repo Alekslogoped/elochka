@@ -44,7 +44,7 @@ main{width:100%;margin:auto}
 @keyframes glow{to{transform:translate(-50%,-50%) scale(1.35);opacity:.7}}
 @keyframes twinkle{to{opacity:.55}}
 .hero{position:absolute;z-index:3;bottom:1%;width:25%;height:69%;object-fit:contain;visibility:hidden;pointer-events:none;filter:drop-shadow(0 7px 6px #4b4c5740)}
-.santa{right:3%;object-position:bottom right;transform:translateX(130%)}
+.santa{right:clamp(4%,calc(30% - 34cqh),14%);object-position:bottom right;transform:translateX(130%)}
 .maiden{left:clamp(4%,calc(36% - 27cqh),20%);object-position:bottom left;transform:translateX(-130%)}
 .win .hero{visibility:visible;transform:translateX(0);transition:transform .85s cubic-bezier(.22,.77,.27,1.03)}
 .win .reference{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility .22s}
@@ -90,7 +90,7 @@ main{width:100%;margin:auto}
  .reference{width:32%;height:50%;left:2%;top:5%;padding:5px 4px;border-radius:13px}
  .tree.main-tree{left:64%;width:min(63%,68cqh);bottom:2%}
  .hero{width:25%;height:54%}
- .santa{right:1%}
+ .santa{right:3%}
  .maiden{left:3%}
  .scene.win .main-tree{left:50%;width:min(53%,68cqh)}
  .deck{width:calc(100% - 14px);margin-bottom:6px;border-radius:14px}
