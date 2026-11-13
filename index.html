@@ -77,7 +77,6 @@ main{width:100%;margin:auto}
 .levels{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .level-button{min-width:38px;min-height:36px;border:1px solid #f4fcffb8;border-radius:10px;background:#e9f7ffdb;color:var(--ink);font-weight:bold}
 .level-button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--ink)}
-.level-name{margin:0 0 0 4px;border-radius:8px;padding:4px 7px;background:#18373bbd;font-size:clamp(12px,1.8vw,15px);color:#fff}
 .grammar-guide{margin:0 0 2px;color:#18373b;font-size:12px;font-weight:700}
 .badge{position:absolute;z-index:1;right:-7%;bottom:-7%;width:47%;aspect-ratio:1;border:1px solid #18373b;border-radius:50%;background:#c8edb0;pointer-events:none}
 .slot img.badge{inset:auto -7% -7% auto;width:47%;height:auto}
@@ -98,7 +97,6 @@ main{width:100%;margin:auto}
  .status{font-size:12px}
 }
 @media(max-width:390px){
- .level-name{font-size:11px;padding:3px 4px;margin-left:0}
  .levels{gap:3px}
  .level-button{min-width:28px}
 }
@@ -108,6 +106,12 @@ main{width:100%;margin:auto}
  .ball-cell{max-width:48px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+#rules{width:min(580px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:clamp(14px,4vw,26px);border:1px solid #fff;border-radius:19px;background:#f0faff;color:var(--ink);box-shadow:0 12px 40px #14304066}
+#rules::backdrop{background:#142e368c}
+.rules-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.rules-heading h2{margin:0;font-size:clamp(21px,5vw,27px)}
+.rules-levels{padding-left:24px;margin:0}
+.rules-levels li+li{margin-top:9px}
 </style>
 </head>
 <body>
@@ -115,10 +119,10 @@ main{width:100%;margin:auto}
 <section class="scene" id="scene" aria-label="Лесная полянка">
  <div class="toolbar">
   <nav class="levels" aria-label="Уровни игры" id="levels">
-   <span class="level-name" id="level-name"></span>
   </nav>
   <div class="controls">
    <button class="action primary" type="button" id="check">Проверить</button>
+   <button class="action" type="button" id="rules-button" aria-haspopup="dialog">Правила</button>
    <button class="action" type="button" id="reset">Заново</button>
    <button class="action full" id="fullscreen" type="button" title="Во весь экран" aria-label="Во весь экран">⛶ <span>Во весь экран</span></button>
   </div>
@@ -149,6 +153,20 @@ main{width:100%;margin:auto}
  </section>
 </section>
 </main>
+<dialog id="rules" aria-labelledby="rules-title">
+ <form method="dialog" class="rules-heading">
+  <h2 id="rules-title">Правила игры</h2>
+  <button class="action" autofocus>Закрыть</button>
+ </form>
+ <p>Найди на образце место для каждого шарика. Перетащи его на ёлочку или нажми сначала на шарик, потом на нужный кружок. Когда развесишь все девять шариков, нажми «Проверить».</p>
+ <ol class="rules-levels">
+  <li><strong>Звук [л] в начале слова.</strong> Назови картинку. Например, «лапа».</li>
+  <li><strong>Звук [л] в середине слова.</strong> Назови картинку. Например, «салат».</li>
+  <li><strong>Звук [л] в конце слова.</strong> Назови картинку. Например, «стол».</li>
+  <li><strong>Слова со звуком [л] в разных местах.</strong> Назови картинку и скажи фразу по значку. Сердечко — «Я люблю салат», цифра 5 — «Пять бокалов», облачко — «Я думаю о лодке».</li>
+  <li><strong>Слова со звуком [л] в разных местах.</strong> Составляй фразы по сердечку, цифре 5 и облачку. Если видишь крестик, скажи, чего у тебя нет. Например, «У меня нет халата».</li>
+ </ol>
+</dialog>
 <script>
 const words = [
  'Лапа','Лодка','Лопата','Лупа','Лампа','Лама','Лук','Луна','Лапоть',
@@ -191,7 +209,6 @@ const santa = document.querySelector('#santa');
 const maiden = document.querySelector('#maiden');
 const next = document.querySelector('#next');
 const levelMenu = document.querySelector('#levels');
-const levelName = document.querySelector('#level-name');
 const grammarGuide = document.querySelector('#grammar-guide');
 const levelButtons = [];
 const fullscreen = document.querySelector('#fullscreen');
@@ -256,7 +273,7 @@ levels.forEach((level,index) => {
  button.textContent = index + 1;
  button.setAttribute('aria-label', 'Уровень ' + (index + 1) + ' — ' + level.name);
  button.addEventListener('click', () => { if (index !== levelIndex) loadLevel(index); });
- levelMenu.insertBefore(button, levelName);
+ levelMenu.append(button);
  levelButtons.push(button);
 });
 
@@ -292,7 +309,6 @@ function loadLevel(index) {
  });
  initialOrder.forEach(slotIndex => addBall(level.cards[slotIndex]));
  levelButtons.forEach((button,buttonIndex) => button.setAttribute('aria-pressed', String(index === buttonIndex)));
- levelName.textContent = level.name;
  grammarGuide.hidden = !level.tasks;
  grammarGuide.textContent = index === 3 ? '♥ Я люблю   ·   5 Пять   ·   ☁ Я думаю о…' : '♥ Я люблю   ·   5 Пять   ·   ✕ У меня нет   ·   ☁ Я думаю о…';
  render();
@@ -482,6 +498,8 @@ document.addEventListener('fullscreenchange', () => {
  fullscreen.setAttribute('aria-label',label);
  fullscreen.title = label;
 });
+const rules = document.querySelector('#rules');
+document.querySelector('#rules-button').addEventListener('click', () => rules.showModal());
 loadLevel(0);
 </script>
 </body>
